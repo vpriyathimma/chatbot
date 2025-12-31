@@ -49,8 +49,4 @@ This follows **industry-standard secure development practices**.
 
 ---
 
-##  How to Run the Project
 
-### 1️ Install dependencies
-```bash
-pip install -r requirement.txt
