@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Application</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Authentication Section -->
+      <div class="auth-container" id="authContainer">
+        <div class="auth-box" id="loginBox">
+          <h2>Login</h2>
+          <form id="loginForm">
+            <input
+              type="text"
+              id="loginUsername"
+              placeholder="Username"
+              required
+            />
+            <input
+              type="password"
+              id="loginPassword"
+              placeholder="Password"
+              required
+            />
+            <button type="submit">Login</button>
+          </form>
+          <p>
+            Don't have an account? <a href="#" id="showRegister">Register</a>
+          </p>
+        </div>
+        <div class="auth-box" id="registerBox" style="display: none">
+          <h2>Register</h2>
+          <form id="registerForm">
+            <input
+              type="text"
+              id="registerUsername"
+              placeholder="User Name"
+              required
+            />
+            <input
+              type="email"
+              id="registerUsername"
+              placeholder="User Mail"
+              required
+            />
+            <input
+              type="text"
+              id="registerUsername"
+              placeholder="Phone Number"
+              required
+            />
+            <input
+              type="text"
+              id="registerUsername"
+              placeholder="Password"
+              required
+            />
+
+            <input
+              type="password"
+              id="registerPassword"
+              placeholder="Confirm Password"
+              required
+            />
+            <button type="submit">Register</button>
+          </form>
+          <p>Already have an account? <a href="#" id="showLogin">Login</a></p>
+        </div>
+      </div>
+
+      <!-- Main Chat Section -->
+      <div class="chat-section" id="chatSection" style="display: none">
+        <div class="chat-history">
+          <h2>Chat History</h2>
+          <div id="historyList">
+            <!-- Chat history items will be dynamically added here -->
+          </div>
+        </div>
+        <div class="chat-container">
+          <div class="chat-box">
+            <div class="messages" id="messageArea">
+              <!-- Chat messages will be dynamically added here -->
+            </div>
+          </div>
+          <div class="chat-input">
+            <input
+              type="text"
+              id="messageInput"
+              placeholder="Type a message..."
+            />
+            <button id="sendButton">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // script.js
+
+      // Authentication toggles
+      document.getElementById("showRegister").addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("registerBox").style.display = "block";
+      });
+
+      document.getElementById("showLogin").addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById("registerBox").style.display = "none";
+        document.getElementById("loginBox").style.display = "block";
+      });
+
+      // Handle login and registration (mock functionality)
+      document.getElementById("loginForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        // Add your login logic here
+        showChat();
+      });
+
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", (e) => {
+          e.preventDefault();
+          // Add your registration logic here
+          showChat();
+        });
+
+      // Show chat section
+      function showChat() {
+        document.getElementById("authContainer").style.display = "none";
+        document.getElementById("chatSection").style.display = "flex";
+      }
+
+      // Handle sending messages
+      document.getElementById("sendButton").addEventListener("click", () => {
+        const input = document.getElementById("messageInput");
+        const messageText = input.value.trim();
+
+        if (messageText) {
+          addMessage(messageText, "user-message");
+          input.value = "";
+
+          // Simulate a bot response
+          setTimeout(() => {
+            addMessage("This is a bot response.", "bot-message");
+          }, 1000);
+        }
+      });
+
+      // Add message to chat
+      function addMessage(text, className) {
+        const messageContainer = document.createElement("div");
+        messageContainer.className = `message ${className}`;
+        messageContainer.innerHTML = `<p>${text}</p>`;
+
+        document.getElementById("messageArea").appendChild(messageContainer);
+        document.getElementById("messageArea").scrollTop =
+          document.getElementById("messageArea").scrollHeight;
+
+        // Add to chat history
+        const historyItem = document.createElement("div");
+        historyItem.innerHTML = `<p>${text}</p>`;
+        document.getElementById("historyList").appendChild(historyItem);
+      }
+    </script>
+    <style>
+      /* styles.css */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f0f0f0;
+      }
+
+      .container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+      }
+
+      .auth-container {
+        width: 100%;
+        max-width: 400px;
+        margin: auto;
+        padding: 20px;
+        background: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .auth-box {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .auth-box form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .auth-box input {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      .auth-box button {
+        padding: 10px;
+        background-color: #007bff;
+        border: none;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .auth-box button:hover {
+        background-color: #0056b3;
+      }
+
+      .chat-section {
+        display: flex;
+        width: 100%;
+      }
+
+      .chat-history {
+        width: 300px;
+        background: #fff;
+        border-right: 1px solid #ccc;
+        padding: 10px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        overflow-y: auto;
+      }
+
+      .chat-history h2 {
+        margin-top: 0;
+      }
+
+      .chat-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .chat-box {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        background-color: #fff;
+        overflow-y: auto;
+      }
+
+      .messages {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .message {
+        padding: 10px;
+        border-radius: 5px;
+      }
+
+      .bot-message {
+        background-color: #e1f5fe;
+        align-self: flex-start;
+      }
+
+      .user-message {
+        background-color: #c8e6c9;
+        align-self: flex-end;
+      }
+
+      .chat-input {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #ccc;
+        background-color: #fafafa;
+      }
+
+      #messageInput {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      #sendButton {
+        padding: 10px;
+        margin-left: 10px;
+        background-color: #007bff;
+        border: none;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      #sendButton:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </body>
+</html>

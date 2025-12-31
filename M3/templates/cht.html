@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Application</title>
+    <!-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet"> -->
+    <!-- Font Awesome (for icons) -->
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"> -->
+  </head>
+  <body>
+    <div class="container">
+      <!-- Authentication Section -->
+      <div class="auth-container" id="authContainer">
+        <div class="auth-box" id="loginBox">
+          <div class="wrapper">
+            <div class="logo">
+              <!-- chatbot-logo.svg -->
+              <svg
+                width="100"
+                height="100"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 0C5.373 0 0 5.373 0 12c0 2.05.528 3.98 1.444 5.65-.033.112-.056.231-.056.354 0 .265.207.48.469.48.085 0 .165-.03.236-.087.743-.605 1.597-1.095 2.534-1.441A8.94 8.94 0 0 0 12 15c5.627 0 10-4.373 10-10S17.627 0 12 0zm-1 17H8v-2h3v2zm1-6H8V7h5v4zm5 6h-3v-2h3v2z"
+                  fill="#1DA1F2"
+                />
+              </svg>
+            </div>
+            <div class="name" style="text-align: center">Chatbot</div>
+            <form class="p-3 mt-3" id="loginForm">
+              <div class="form-field d-flex align-items-center">
+                <input
+                  type="text"
+                  name="userName"
+                  id="userName"
+                  placeholder="Username"
+                  required
+                />
+              </div>
+              <div class="form-field d-flex align-items-center">
+                <input
+                  type="password"
+                  name="password"
+                  id="pwd"
+                  placeholder="Password"
+                  required
+                />
+              </div>
+              <button class="btn mt-3">Login</button>
+            </form>
+            <div class="text-center fs-6" style="margin-top: 20px">
+              <p>
+                Don't have an account?
+                <a href="#" id="showRegister">Register</a>
+              </p>
+              <br />
+              <p id="login_error"></p>
+            </div>
+          </div>
+        </div>
+        <div class="auth-box" id="registerBox" style="display: none">
+          <div class="reg container">
+            <div class="text">Register</div>
+            <form action="/add_user" id="registerForm" method="post">
+              <div class="form-row">
+                <div class="input-data">
+                  <input type="text" id="username" name="username" required />
+                  <label for="">User Name</label>
+                </div>
+                <div class="input-data">
+                  <input type="email" id="email" name="email" required />
+                  <label for="">Email</label>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="input-data">
+                  <input type="password" id="pass" required />
+                  <label for="">Password</label>
+                </div>
+                <div class="input-data">
+                  <input
+                    type="password"
+                    name="password"
+                    id="confirm_pass"
+                    required
+                  />
+                  <label for="">Confirm Password</label>
+                </div>
+              </div>
+              <div class="form-row">
+                <div
+                  class="underline"
+                  id="error"
+                  style="margin-left: 15px"
+                ></div>
+              </div>
+              <div class="form-row">
+                <div class="input-data textarea">
+                  <p>
+                    Already have an account?
+                    <a
+                      href="#"
+                      id="showLogin"
+                      style="color: #1da1f2; font-size: smaller"
+                      >Login</a
+                    >
+                  </p>
+                </div>
+              </div>
+              <div class="form-row submit-btn">
+                <input type="submit" value="Submit" />
+                <div class="inner"></div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Section -->
+      <div class="chat-section" id="chatSection" style="display: none">
+        <!-- <div class="chat-history">
+                <h2>Chat History</h2>
+                <ul id="historyList"></ul>
+            </div>
+            <div class="chat-container">
+                <div class="chat-box">
+                    <div class="messages" id="messages">
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="chatInput" placeholder="Type a message...">
+                    <button id="sendMessage" >Send</button>
+                </div>
+            </div> -->
+      </div>
+    </div>
+
+    <script>
+      // Elements
+      const authContainer = document.getElementById("authContainer");
+      const loginBox = document.getElementById("loginBox");
+      const registerBox = document.getElementById("registerBox");
+      const showRegister = document.getElementById("showRegister");
+      const showLogin = document.getElementById("showLogin");
+      const chatSection = document.getElementById("chatSection");
+      const loginForm = document.getElementById("loginForm");
+      const registerForm = document.getElementById("registerForm");
+      // const sendMessageButton = document.getElementById('sendMessage');
+      // const chatInput = document.getElementById('chatInput');
+      // const messagesContainer = document.getElementById('messages');
+      // const historyList = document.getElementById('historyList');
+
+      // Dummy function to simulate authentication
+      function authenticate(username, password, callback) {
+        // Simulate authentication
+        setTimeout(() => {
+          callback(true); // Assume authentication is successful
+        }, 1000);
+      }
+
+      // Login Form Submit
+      loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const userName = document.getElementById("userName").value;
+        const passWord = document.getElementById("pwd").value;
+
+        fetch("/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: userName,
+            password: passWord,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // Handle response data
+            if (data.status === "success") {
+              // Display
+              alert("Login successful!");
+              authContainer.style.display = "none";
+              chatSection.style.display = "flex";
+              console.log(data.username);
+              window.location.href = "/chatbot";
+            } else if (data.status === "failed") {
+              document.getElementById(
+                "login_error"
+              ).innerHTML = `Please Enter Correct UserName And PassWord`;
+              document.getElementById("login_error").style.color = "red";
+            }
+          })
+          .catch((error) => {
+            document.getElementById(
+              "login_error"
+            ).innerHTML = `Please Enter Correct UserName And PassWord`;
+            document.getElementById("login_error").style.color = "red";
+            console.error("Error:", error);
+          });
+
+        // authenticate(userName, password, (success) => {
+        //     if (success) {
+        //         authContainer.style.display = 'none';
+        //         chatSection.style.display = 'flex';
+        //         addMessage('Welcome to the chat!', 'bot');
+        //     } else {
+        //         alert('Authentication failed!');
+        //     }
+        // });
+      });
+
+      // Register Form Submit
+      registerForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const password = document.getElementById("pass").value;
+        const confirmPassword = document.getElementById("confirm_pass").value;
+        const username = document.getElementById("username").value;
+        const email = document.getElementById("email").value;
+        const error = document.getElementById("error");
+
+        if (password !== confirmPassword) {
+          error.textContent = "Passwords do not match";
+          error.style.color = "red";
+          return;
+        }
+        error.textContent = "correct";
+        error.style.color = "green";
+
+        // const username = document.getElementById('username').value;
+        // const email = document.getElementById('email').value;
+
+        fetch("/add_user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username,
+            email: email,
+            password: password,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // Handle response data
+            if (data.status === "success") {
+              // Display
+              alert("Registration successful!");
+              showLogin.click();
+            } else {
+              document.getElementById(
+                "error"
+              ).innerHTML = `Registration Error enter Unique user name and Email `;
+              document.getElementById("error").style.color = "red";
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+        // showLogin.click();
+      });
+
+      // Show Register Form
+      showRegister.addEventListener("click", (e) => {
+        e.preventDefault();
+        loginBox.style.display = "none";
+        registerBox.style.display = "block";
+      });
+
+      // Show Login Form
+      showLogin.addEventListener("click", (e) => {
+        e.preventDefault();
+        registerBox.style.display = "none";
+        loginBox.style.display = "block";
+      });
+
+      // Send Message
+      // sendMessageButton.addEventListener('click', () => {
+      //     const message = chatInput.value.trim();
+      //     if (message) {
+      //         addMessage(message, 'user');
+      //         chatInput.value = '';
+
+      //         // Simulate bot response
+      //         setTimeout(() => {
+      //             addMessage('This is a bot response.', 'bot');
+      //         }, 1000);
+      //     }
+      // });
+
+      // // Add Message to Chat
+      // function addMessage(text, type) {
+      //     const messageElement = document.createElement('div');
+      //     messageElement.className = 'message ' + type + '-message';
+      //     messageElement.textContent = text;
+      //     messagesContainer.appendChild(messageElement);
+      //     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      //     // Add to history
+      //     const historyItem = document.createElement('li');
+      //     historyItem.textContent = text;
+      //     historyItem.className = type + '-message';
+      //     historyList.appendChild(historyItem);
+      // }
+    </script>
+
+    <style>
+      .chat-section {
+        display: flex;
+        width: 100%;
+      }
+
+      .chat-history {
+        width: 300px;
+        background: #fff;
+        border-right: 1px solid #ccc;
+        padding: 10px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        overflow-y: auto;
+      }
+
+      .chat-history h2 {
+        margin-top: 0;
+      }
+
+      .chat-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .chat-box {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        background-color: #fff;
+        overflow-y: auto;
+      }
+
+      .messages {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .message {
+        padding: 10px;
+        border-radius: 5px;
+      }
+
+      .bot-message {
+        background-color: #e1f5fe;
+        align-self: flex-start;
+      }
+
+      .user-message {
+        background-color: #c8e6c9;
+        align-self: flex-end;
+      }
+
+      .chat-input {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #ccc;
+        background-color: #fafafa;
+      }
+
+      #messageInput {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      #sendButton {
+        padding: 10px;
+        margin-left: 10px;
+        background-color: #007bff;
+        border: none;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      #sendButton:hover {
+        background-color: #0056b3;
+      }
+    </style>
+    <style>
+      /* Importing fonts from Google */
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
+
+      /* Reseting */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(115deg, #56d8e4 10%, #9f01ea 90%);
+      }
+
+      .wrapper {
+        max-width: 350px;
+        min-height: 500px;
+        margin: 80px auto;
+        padding: 40px 30px 30px 30px;
+        background-color: #ecf0f3;
+        border-radius: 15px;
+        box-shadow: 13px 13px 20px #cbced1, -13px -13px 20px #fff;
+      }
+
+      .logo {
+        width: 80px;
+        margin: auto;
+      }
+
+      .logo svg {
+        width: 100%;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 50%;
+        box-shadow: 0px 0px 3px #5f5f5f, 0px 0px 0px 5px #ecf0f3,
+          8px 8px 15px #a7aaa7, -8px -8px 15px #fff;
+      }
+
+      .wrapper .name {
+        font-weight: 600;
+        font-size: 1.4rem;
+        letter-spacing: 1.3px;
+        padding-left: 10px;
+        color: #555;
+      }
+
+      .wrapper .form-field input {
+        width: 100%;
+        display: block;
+        border: none;
+        outline: none;
+        background: none;
+        font-size: 1.2rem;
+        color: #666;
+        padding: 10px 15px 10px 10px;
+        /* border: 1px solid red; */
+      }
+
+      .wrapper .form-field {
+        padding-left: 10px;
+        margin-bottom: 20px;
+        border-radius: 20px;
+        box-shadow: inset 8px 8px 8px #cbced1, inset -8px -8px 8px #fff;
+      }
+
+      .wrapper .form-field .fas {
+        color: #555;
+      }
+
+      .wrapper .btn {
+        box-shadow: none;
+        width: 100%;
+        height: 40px;
+        background-color: #03a9f4;
+        color: #fff;
+        border-radius: 25px;
+        box-shadow: 3px 3px 3px #b1b1b1, -3px -3px 3px #fff;
+        letter-spacing: 1.3px;
+      }
+
+      .wrapper .btn:hover {
+        background-color: #039be5;
+      }
+
+      .wrapper a {
+        text-decoration: none;
+        font-size: 0.8rem;
+        color: #03a9f4;
+      }
+
+      .wrapper a:hover {
+        color: #039be5;
+      }
+
+      @media (max-width: 380px) {
+        .wrapper {
+          margin: 30px 20px;
+          padding: 40px 15px 15px 15px;
+        }
+      }
+    </style>
+    <style>
+      /* register */
+      @import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap");
+      * {
+        margin: 0;
+        padding: 0;
+        outline: none;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 10px;
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(115deg, #56d8e4 10%, #9f01ea 90%);
+      }
+      /* .container{
+      max-width: 800px;
+      background: #fff;
+      width: 800px;
+      padding: 25px 40px 10px 40px;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    } */
+      .reg {
+        max-width: 650px;
+        min-height: 480px;
+        margin: 80px auto;
+        padding: 40px 30px 30px 30px;
+        background-color: #ecf0f3;
+        border-radius: 15px;
+        box-shadow: 13px 13px 20px #cbced1, -13px -13px 20px #fff;
+      }
+      .reg .submit-btn input {
+        color: whitesmoke;
+        width: 200px;
+        height: 50px;
+        padding: 5px;
+        border: none;
+        border-radius: 5px;
+        background: -webkit-linear-gradient(
+          right,
+          #56d8e4,
+          #9f01ea,
+          #56d8e4,
+          #9f01ea
+        );
+      }
+
+      .container .text {
+        text-align: center;
+        font-size: 41px;
+        font-weight: 600;
+        font-family: "Poppins", sans-serif;
+      }
+      .container form {
+        padding: 30px 0 0 0;
+      }
+      .container form .form-row {
+        display: flex;
+        margin: 32px 0;
+      }
+      form .form-row .input-data {
+        width: 100%;
+        height: 40px;
+        margin: 0 20px;
+        position: relative;
+      }
+      form .form-row .textarea {
+        height: 70px;
+      }
+      .input-data input,
+      .textarea textarea {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: none;
+        font-size: 17px;
+        border-bottom: 2px solid rgba(0, 0, 0, 0.12);
+      }
+      .input-data input:focus ~ label,
+      .textarea textarea:focus ~ label,
+      .input-data input:valid ~ label,
+      .textarea textarea:valid ~ label {
+        transform: translateY(-20px);
+        font-size: 14px;
+        color: #3498db;
+      }
+      .textarea textarea {
+        resize: none;
+        padding-top: 10px;
+      }
+      .input-data label {
+        position: absolute;
+        pointer-events: none;
+        bottom: 10px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+      }
+      .textarea label {
+        width: 100%;
+        bottom: 40px;
+        background: #fff;
+      }
+      .input-data .underline {
+        position: absolute;
+        bottom: 0;
+        height: 2px;
+        width: 100%;
+      }
+      .input-data .underline:before {
+        position: absolute;
+        content: "";
+        height: 2px;
+        width: 100%;
+        background: #3498db;
+        transform: scaleX(0);
+        transform-origin: center;
+        transition: transform 0.3s ease;
+      }
+      .input-data input:focus ~ .underline:before,
+      .input-data input:valid ~ .underline:before,
+      .textarea textarea:focus ~ .underline:before,
+      .textarea textarea:valid ~ .underline:before {
+        transform: scale(1);
+      }
+
+      @media (max-width: 700px) {
+        .container .text {
+          font-size: 30px;
+        }
+        .container form {
+          padding: 10px 0 0 0;
+        }
+        .container form .form-row {
+          display: block;
+        }
+        form .form-row .input-data {
+          margin: 35px 0 !important;
+        }
+        .submit-btn .input-data {
+          width: 40% !important;
+        }
+      }
+      .input-data {
+        position: relative;
+        margin-bottom: 15px;
+      }
+      .input-data input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+      }
+      .input-data label {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 14px;
+        color: #aaa;
+        transition: 0.3s;
+      }
+      .input-data input:focus + label,
+      .input-data input:not(:placeholder-shown) + label {
+        top: -10px;
+        left: 10px;
+        font-size: 12px;
+        color: #1da1f2;
+      }
+      .submit-btn .input-data {
+        overflow: hidden;
+        height: 45px !important;
+        width: 25% !important;
+      }
+      .submit-btn .input-data .inner {
+        height: 100%;
+        width: 300%;
+        position: absolute;
+        left: -100%;
+        background: -webkit-linear-gradient(
+          right,
+          #56d8e4,
+          #9f01ea,
+          #56d8e4,
+          #9f01ea
+        );
+        transition: all 0.4s;
+      }
+      .submit-btn .input-data:hover .inner {
+        left: 0;
+      }
+      .submit-btn .input-data input {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 17px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        position: relative;
+        z-index: 2;
+      }
+      .underline {
+        border-bottom: 2px solid #1da1f2;
+        margin-top: 5px;
+        height: 2px;
+      }
+      #error {
+        margin-top: 5px;
+        color: red;
+      }
+    </style>
+  </body>
+</html>

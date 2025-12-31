@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Models & Data
+*.safetensors
+*.pt
+*.bin
+*.h5
+*.pkl
+M1/Dataset/
+M2/Dataset/
+M2/Embed_Model/
+
+# Secrets
+*.env
+*key*.txt
+*.ipynb
+
