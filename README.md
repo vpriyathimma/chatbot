@@ -25,11 +25,6 @@ Instead of just searching keywords, it uses vector embeddings to "understand" th
 *   **Data:** Right now it’s focused on mobiles and laptops. I’m thinking of expanding the dataset later.
 *   **Privacy:** I've used `.env` for keys, so no secrets are leaked in the code.
 
-### To-do list
-- [ ] Add more product categories (maybe cameras?)
-- [ ] Make the UI a bit more "chat-like"
-- [ ] Add a "compare" feature for two specific models
-
 ---
 **Vishnupriya T**  
 [vpriyathimma@gmail.com](mailto:vpriyathimma@gmail.com) | [@vpriyathimma](https://github.com/vpriyathimma)
