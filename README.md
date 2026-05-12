@@ -1,4 +1,4 @@
-# Product Recommendation Chatbot 🛍️
+# Product Recommendation Chatbot 
 
 I put this together because I was tired of opening 50 tabs every time I wanted to compare phone specs. It's a simple chatbot that uses RAG (Retrieval-Augmented Generation) to actually understand what you're looking for in a mobile or laptop and give you a straight answer.
 
